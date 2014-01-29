@@ -3,10 +3,10 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.TeamFoundation;
-using Microsoft.TeamFoundation.Build.Client;
-using Microsoft.TeamFoundation.Client;
-using Microsoft.TeamFoundation.Framework.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using ModernTfsClient;
+using TfsClientAbstraction;
+using TfsLegacyClient;
 
 namespace TestClient
 {
@@ -25,14 +25,13 @@ namespace TestClient
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            IBuildServer buildServer;
-            Workspace workspace;
+            IWorkspace workspace;
 
             try
             {
                 busyGif.Show();
-                buildServer = await ConnectToTfs(new Uri(tfsServerToConnectTo.SelectedValue.ToString()));
-                workspace = await CreateTfsWorkspace(buildServer, workspaceName.Text);
+                ITeamFoundationServerClient tfsClient = await ConnectToTfs(new Uri(tfsServerToConnectTo.SelectedValue.ToString()));
+                workspace = await CreateTfsWorkspace(tfsClient, workspaceName.Text);
                 busyGif.Hide();
             }
             catch (WorkspaceExistsException)
@@ -49,35 +48,28 @@ namespace TestClient
                 return;
             }
 
-            MessageBox.Show(string.Format("Workspace '{0}' successfully created on TFS version {1}", workspace.DisplayName, buildServer.BuildServerVersion));
+            MessageBox.Show(string.Format("Workspace '{0}' successfully created on TFS version {1}", workspace.DisplayName, @"TO BE COMPLETED"));
         }
 
-        private async Task<IBuildServer> ConnectToTfs(Uri uri)
+        private async Task<ITeamFoundationServerClient> ConnectToTfs(Uri uri)
         {
             var credentials = new NetworkCredential("TfsAdmin", "T3@m5erver", "TESTNET");
-            
-            if (tfsServerToConnectTo.SelectedIndex == 0 || tfsServerToConnectTo.SelectedIndex == 1)
-            {
-                var tfsServer = new TeamFoundationServer(uri, credentials);
-                return await Task.Run(() => tfsServer.GetService<IBuildServer>());
-            }
-            else
-            {
-                var tfsServer = new TfsTeamProjectCollection(
-                    uri,
-                    new TfsClientCredentials(
-                        new WindowsCredential(
-                            credentials)));
 
-                await Task.Run(() => tfsServer.Connect(ConnectOptions.None));
-                return await Task.Run(() => tfsServer.GetService<IBuildServer>());
-            }
+            ITeamFoundationServerClient tfsClient = IsLegacyTfsServer() ? (ITeamFoundationServerClient) new LegacyTfsClient()
+                                                                        : new TfsClient();
+
+            await Task.Run(() => tfsClient.Connect(uri, credentials));
+            return tfsClient;
         }
 
-        private async Task<Workspace> CreateTfsWorkspace(IBuildServer buildServer, string workspaceName)
+        private static async Task<IWorkspace> CreateTfsWorkspace(ITeamFoundationServerClient tfsClient, string workspaceName)
         {
-            var vcs = await Task.Run(() => buildServer.TeamProjectCollection.GetService<VersionControlServer>());
-            return await Task.Run(() => vcs.CreateWorkspace(workspaceName));
+            return await Task.Run(() => tfsClient.CreateWorkspace(workspaceName));
+        }
+
+        private bool IsLegacyTfsServer()
+        {
+            return tfsServerToConnectTo.SelectedIndex == 0 || tfsServerToConnectTo.SelectedIndex == 1;
         }
 
         private void HandleException(string message)

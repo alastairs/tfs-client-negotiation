@@ -5,6 +5,12 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{483BE480-6179-4ECF-8DB8-5CCD9DB6D965}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsLegacyClient", "TfsLegacyClient\TfsLegacyClient.csproj", "{207F2759-6941-45B5-9F04-CED11FF340A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsClientAbstraction", "TfsClientAbstraction\TfsClientAbstraction.csproj", "{5764633E-B390-4734-830A-A0AA1AB1B28B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernTfsClient", "ModernTfsClient\ModernTfsClient.csproj", "{E9EE92C9-B507-41C7-9CB0-889D582A3C25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{483BE480-6179-4ECF-8DB8-5CCD9DB6D965}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{483BE480-6179-4ECF-8DB8-5CCD9DB6D965}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{483BE480-6179-4ECF-8DB8-5CCD9DB6D965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{207F2759-6941-45B5-9F04-CED11FF340A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{207F2759-6941-45B5-9F04-CED11FF340A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{207F2759-6941-45B5-9F04-CED11FF340A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{207F2759-6941-45B5-9F04-CED11FF340A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5764633E-B390-4734-830A-A0AA1AB1B28B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5764633E-B390-4734-830A-A0AA1AB1B28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5764633E-B390-4734-830A-A0AA1AB1B28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5764633E-B390-4734-830A-A0AA1AB1B28B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9EE92C9-B507-41C7-9CB0-889D582A3C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9EE92C9-B507-41C7-9CB0-889D582A3C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9EE92C9-B507-41C7-9CB0-889D582A3C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9EE92C9-B507-41C7-9CB0-889D582A3C25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
