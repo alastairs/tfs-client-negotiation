@@ -1,10 +1,8 @@
-﻿using System;
+﻿using ModernTfsClient;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.TeamFoundation;
-using Microsoft.TeamFoundation.VersionControl.Client;
-using ModernTfsClient;
 using TfsClientAbstraction;
 using TfsLegacyClient;
 
@@ -27,36 +25,32 @@ namespace TestClient
         {
             IWorkspace workspace;
 
+            ITeamFoundationServerClient tfsClient;
             try
             {
                 busyGif.Show();
-                ITeamFoundationServerClient tfsClient = await ConnectToTfs(new Uri(tfsServerToConnectTo.SelectedValue.ToString()));
+                tfsClient = await ConnectToTfs(new Uri(tfsServerToConnectTo.SelectedValue.ToString()));
                 workspace = await CreateTfsWorkspace(tfsClient, workspaceName.Text);
+            }
+            catch (TfsException ex)
+            {
+                MessageBox.Show(ex.Message, @"TFS Test Client", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            finally
+            {
                 busyGif.Hide();
             }
-            catch (WorkspaceExistsException)
-            {
-                HandleException(string.Format("Workspace '{0}' already exists!", workspaceName.Text));
-                return;
-            }
-            catch (TeamFoundationClientVersionCheckException)
-            {
-                HandleException(
-                    string.Format("Cannot connect to TFS server '{0}' using the {1} version of the client libraries",
-                        tfsServerToConnectTo.SelectedValue, "2013"));
 
-                return;
-            }
-
-            MessageBox.Show(string.Format("Workspace '{0}' successfully created on TFS version {1}", workspace.DisplayName, @"TO BE COMPLETED"));
+            MessageBox.Show(string.Format("Workspace '{0}' successfully created on TFS version {1}", workspace.DisplayName, tfsClient.GetServerVersion()));
         }
 
         private async Task<ITeamFoundationServerClient> ConnectToTfs(Uri uri)
         {
             var credentials = new NetworkCredential("TfsAdmin", "T3@m5erver", "TESTNET");
 
-            ITeamFoundationServerClient tfsClient = IsLegacyTfsServer() ? (ITeamFoundationServerClient) new LegacyTfsClient()
-                                                                        : new TfsClient();
+            ITeamFoundationServerClient tfsClient = new ExceptionHandlingTfsClient(IsLegacyTfsServer() ? (ITeamFoundationServerClient)new LegacyTfsClient()
+                                                                                                       : new TfsClient());
 
             await Task.Run(() => tfsClient.Connect(uri, credentials));
             return tfsClient;
@@ -72,10 +66,9 @@ namespace TestClient
             return tfsServerToConnectTo.SelectedIndex == 0 || tfsServerToConnectTo.SelectedIndex == 1;
         }
 
-        private void HandleException(string message)
+        private void close_Click(object sender, EventArgs e)
         {
-            busyGif.Hide();
-            MessageBox.Show(message, @"TFS Test Client", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Close();
         }
     }
 }
